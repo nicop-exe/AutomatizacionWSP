@@ -1,85 +1,440 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Dashboard - Pending Approvals</title>
+    <title>Car Seller Agent | Panel de Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .card h3 { margin-top: 0; color: #333; }
-        .message-bubble { background: #e1ffc7; padding: 10px; border-radius: 8px; display: inline-block; margin-bottom: 15px; }
-        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; margin-bottom: 10px;}
-        .actions { display: flex; gap: 10px; }
-        button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-approve { background-color: #4CAF50; color: white; }
-        .btn-reject { background-color: #f44336; color: white; }
-        .empty-state { text-align: center; color: #666; padding: 40px; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+            color: var(--text-main);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Ambient animated blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(167, 139, 250, 0.6);
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(96, 165, 250, 0.6);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e1b4b;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+        }
+
+        header p {
+            color: #4338ca;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        }
+
+        /* Glassmorphism Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #06b6d4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #a78bfa, #818cf8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .contact-info h3 {
+            font-size: 1.1rem;
+            color: #111827;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .contact-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .message-section {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .incoming-message {
+            font-size: 0.95rem;
+            color: #374151;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .reply-editor {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #1f2937;
+            resize: vertical;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            margin-bottom: 1.2rem;
+        }
+
+        .reply-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-approve {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-approve:hover {
+            background: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-reject:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #a78bfa;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* Loading animation for buttons */
+        .loading {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Car Seller Agent Dashboard</h1>
-        <p>Review the AI recommendations before replying to leads.</p>
 
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header>
+        <h1>Inbox IA Automotriz</h1>
+        <p>Revisa y aprueba respuestas antes de contactar a tus prospectos</p>
+    </header>
+
+    <div class="container">
         {% if pending_responses %}
-            {% for resp in pending_responses %}
-            <div class="card" id="card-{{ resp.id }}">
-                <h3>{{ resp.name }} ({{ resp.phone_number }})</h3>
-                <p><strong>They said:</strong></p>
-                <div class="message-bubble">{{ resp.incoming_message }}</div>
-                
-                <p><strong>AI Suggests:</strong></p>
-                <textarea id="reply-{{ resp.id }}">{{ resp.suggested_reply }}</textarea>
-                
-                <div class="actions">
-                    <button class="btn-approve" onclick="approveAndSend({{ resp.id }})">✓ Send Reply</button>
-                    <button class="btn-reject" onclick="reject({{ resp.id }})">✕ Reject</button>
+        {% for resp in pending_responses %}
+        <div class="card" id="card-{{ resp.id }}">
+            <div class="badge"><i class="fas fa-robot"></i> Suggestion Ready</div>
+
+            <div class="card-header">
+                <div class="avatar">
+                    {{ resp.name[0] | upper if resp.name else '?' }}
+                </div>
+                <div class="contact-info">
+                    <h3>{{ resp.name }}</h3>
+                    <p><i class="fab fa-whatsapp"></i> {{ resp.phone_number }}</p>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                No pending messages to review. 🎉
+
+            <div class="message-section">
+                <span class="label">Mensaje Recibido</span>
+                <div class="incoming-message">"{{ resp.incoming_message }}"</div>
             </div>
+
+            <span class="label">Respuesta Sugerida</span>
+            <textarea class="reply-editor" id="reply-{{ resp.id }}">{{ resp.suggested_reply }}</textarea>
+
+            <div class="actions">
+                <button class="btn-approve" onclick="approveAndSend({{ resp.id }}, this)">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+                <button class="btn-reject" onclick="reject({{ resp.id }})">
+                    <i class="fas fa-times"></i> Descartar
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h2>Todo al día</h2>
+            <p>No tienes mensajes pendientes por revisar. Tómate un café ☕</p>
+        </div>
         {% endif %}
     </div>
 
     <script>
-        async function approveAndSend(id) {
-            const btn = document.querySelector(`#card-${id} .btn-approve`);
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-
+        async function approveAndSend(id, btnElement) {
+            btnElement.classList.add('loading');
             const updatedText = document.getElementById(`reply-${id}`).value;
-
-            // Optional: send updated text to backend if changed
-            // We'll keep it simple for now and just trigger the approve endpoint
 
             try {
                 const response = await fetch(`/approve/${id}`, {
                     method: 'POST'
                 });
+
                 if (response.ok) {
-                    document.getElementById(`card-${id}`).remove();
+                    const card = document.getElementById(`card-${id}`);
+                    card.style.transform = 'scale(0.95)';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+
+                    // Check if empty
+                    setTimeout(() => {
+                        if (document.querySelectorAll('.card').length === 0) {
+                            location.reload();
+                        }
+                    }, 350);
                 } else {
-                    alert("Failed to send message.");
-                    btn.innerText = "✓ Send Reply";
-                    btn.disabled = false;
+                    alert("Hubo un error al enviar el mensaje.");
+                    btnElement.classList.remove('loading');
                 }
             } catch (e) {
-                alert("Error sending message.");
-                btn.innerText = "✓ Send Reply";
-                btn.disabled = false;
+                alert("Error de conexión al enviar.");
+                btnElement.classList.remove('loading');
             }
         }
 
         function reject(id) {
-            // For a real app, you'd call a /reject endpoint. 
-            // Here, we'll just hide it from the UI.
-            document.getElementById(`card-${id}`).remove();
+            const card = document.getElementById(`card-${id}`);
+            card.style.transform = 'translateY(20px)';
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+
+            setTimeout(() => {
+                if (document.querySelectorAll('.card').length === 0) {
+                    location.reload();
+                }
+            }, 350);
         }
     </script>
 </body>
+
 </html>
