@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard - Pending Approvals</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card h3 { margin-top: 0; color: #333; }
+        .message-bubble { background: #e1ffc7; padding: 10px; border-radius: 8px; display: inline-block; margin-bottom: 15px; }
+        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; margin-bottom: 10px;}
+        .actions { display: flex; gap: 10px; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-approve { background-color: #4CAF50; color: white; }
+        .btn-reject { background-color: #f44336; color: white; }
+        .empty-state { text-align: center; color: #666; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Car Seller Agent Dashboard</h1>
+        <p>Review the AI recommendations before replying to leads.</p>
+
+        {% if pending_responses %}
+            {% for resp in pending_responses %}
+            <div class="card" id="card-{{ resp.id }}">
+                <h3>{{ resp.name }} ({{ resp.phone_number }})</h3>
+                <p><strong>They said:</strong></p>
+                <div class="message-bubble">{{ resp.incoming_message }}</div>
+                
+                <p><strong>AI Suggests:</strong></p>
+                <textarea id="reply-{{ resp.id }}">{{ resp.suggested_reply }}</textarea>
+                
+                <div class="actions">
+                    <button class="btn-approve" onclick="approveAndSend({{ resp.id }})">✓ Send Reply</button>
+                    <button class="btn-reject" onclick="reject({{ resp.id }})">✕ Reject</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                No pending messages to review. 🎉
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        async function approveAndSend(id) {
+            const btn = document.querySelector(`#card-${id} .btn-approve`);
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            const updatedText = document.getElementById(`reply-${id}`).value;
+
+            // Optional: send updated text to backend if changed
+            // We'll keep it simple for now and just trigger the approve endpoint
+
+            try {
+                const response = await fetch(`/approve/${id}`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    document.getElementById(`card-${id}`).remove();
+                } else {
+                    alert("Failed to send message.");
+                    btn.innerText = "✓ Send Reply";
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                alert("Error sending message.");
+                btn.innerText = "✓ Send Reply";
+                btn.disabled = false;
+            }
+        }
+
+        function reject(id) {
+            // For a real app, you'd call a /reject endpoint. 
+            // Here, we'll just hide it from the UI.
+            document.getElementById(`card-${id}`).remove();
+        }
+    </script>
+</body>
+</html>

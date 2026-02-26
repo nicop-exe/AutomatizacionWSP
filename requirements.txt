@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+requests
+gspread
+google-auth
+python-dotenv
+openai
+google-genai
+Jinja2
+gunicorn
