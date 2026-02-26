@@ -14,7 +14,22 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # In-memory storage for pending approvals (in reality, you'd use a DB like SQLite for persistence)
-pending_responses = []
+pending_responses = [
+    {
+        "id": 1,
+        "name": "Juan Pérez",
+        "phone_number": "5491122334455",
+        "incoming_message": "Hola, vi el auto publicado. Te sirven $4,500 en efectivo mañana mismo?",
+        "suggested_reply": "Hola Juan, muchas gracias por tu oferta y el interés. Lamentablemente el precio piso que manejo es un poco más alto ($5,000). Si te puedes estirar a ese número, podemos cerrar trato mañana. ¡Avisame!"
+    },
+    {
+        "id": 2,
+        "name": "María García",
+        "phone_number": "5491199887766",
+        "incoming_message": "Me pasas fotos del interior y las cubiertas porfa? Tomas menor valor?",
+        "suggested_reply": "Hola María, acá te dejo el link con todas las fotos detalladas: [tu-link-a-drive]. Te comento que por el momento no estoy aceptando permutas, solo venta en efectivo o transferencia. Saludos!"
+    }
+]
 
 
 @app.get("/")
