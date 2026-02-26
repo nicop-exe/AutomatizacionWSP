@@ -32,7 +32,8 @@
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             min-height: 100vh;
             color: var(--text-main);
-            padding: 2rem;
+            padding: 1.5rem;
+            padding-top: env(safe-area-inset-top, 1.5rem);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -82,7 +83,7 @@
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
             font-weight: 700;
             color: #1e1b4b;
             letter-spacing: -0.025em;
@@ -92,7 +93,7 @@
 
         header p {
             color: #4338ca;
-            font-size: 1.1rem;
+            font-size: clamp(0.85rem, 3vw, 1.1rem);
             font-weight: 500;
         }
 
@@ -100,8 +101,15 @@
             width: 100%;
             max-width: 1000px;
             display: grid;
-            gap: 2rem;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+                gap: 2rem;
+            }
         }
 
         /* Glassmorphism Card */
@@ -172,9 +180,10 @@
         }
 
         .badge {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            align-self: flex-start;
             background: rgba(16, 185, 129, 0.1);
             color: #059669;
             padding: 0.25rem 0.75rem;
@@ -182,6 +191,7 @@
             font-size: 0.75rem;
             font-weight: 600;
             border: 1px solid rgba(16, 185, 129, 0.2);
+            margin-bottom: 0.75rem;
         }
 
         .message-section {
@@ -330,9 +340,42 @@
             }
         }
 
-        @media (max-width: 600px) {
-            .container {
-                grid-template-columns: 1fr;
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            header {
+                margin-bottom: 1.5rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+                border-radius: 16px;
+            }
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .contact-info h3 {
+                font-size: 1rem;
+            }
+
+            .reply-editor {
+                min-height: 80px;
+                font-size: 0.9rem;
+            }
+
+            .actions {
+                gap: 0.75rem;
+            }
+
+            button {
+                padding: 0.65rem;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -351,7 +394,7 @@
         {% if pending_responses %}
         {% for resp in pending_responses %}
         <div class="card" id="card-{{ resp.id }}">
-            <div class="badge"><i class="fas fa-robot"></i> Suggestion Ready</div>
+            <div class="badge"><i class="fas fa-robot"></i> IA Lista</div>
 
             <div class="card-header">
                 <div class="avatar">
